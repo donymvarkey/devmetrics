@@ -12,3 +12,5 @@ export const searchGithubRepos = async (query: string) => {
     return error;
   }
 };
+
+// export const getRepoDetails = async (owner: string, repo: string) => {};
