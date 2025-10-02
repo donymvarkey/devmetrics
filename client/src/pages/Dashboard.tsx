@@ -1,5 +1,6 @@
 import { searchGithubRepos } from "@/api";
 import CustomDialog from "@/components/CustomDialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { RepoSearchItem, RepoSearchResponse } from "@/types/types";
 import { GitFork, PlusCircle, Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 const Dashboard = () => {
   const [addRepoDialog, setAddRepoDialog] = useState<boolean>(false);
@@ -17,7 +19,6 @@ const Dashboard = () => {
   const [searchResults, setSearchResults] = useState<RepoSearchItem[]>([]);
   const debouncedQuery = useDebounce(repoName, 500);
   const { currentRepo } = useAppSelector((state) => state.repo);
-  console.log("🚀 ~ Dashboard ~ currentRepo:", currentRepo);
 
   const searchRepositories = async (query: string) => {
     if (!query) return;
@@ -67,11 +68,54 @@ const Dashboard = () => {
           <p>Link new Repo</p>
         </Button>
       </div>
-      {currentRepo === null && (
+      {currentRepo === null ? (
         <div className="flex items-center justify-center h-full">
           <h1 className="text-gray-50/30">
             You don't have added any repositories
           </h1>
+        </div>
+      ) : (
+        <div className="mt-5 p-5 bg-gray-800 rounded-md border border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center flex-row space-x-3">
+              <img
+                src={currentRepo?.owner?.avatar_url}
+                className="w-5 h-5 rounded-full"
+              />
+              <Link
+                to={currentRepo?.html_url}
+                target="_blank"
+                className="text-gray-300 font-semibold hover:underline hover:text-gray-200"
+              >
+                {currentRepo?.name}
+              </Link>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div>
+                <Star className="size-4 text-amber-500 inline mr-1" />
+                <span className="text-gray-50 text-xs">
+                  {currentRepo?.stargazers_count}
+                </span>
+              </div>
+              <div>
+                <GitFork className="size-4 text-amber-500 inline mr-1" />
+                <span className="text-gray-50 text-xs">
+                  {currentRepo?.forks_count}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="text-xs text-gray-400/40 font-medium">About</span>
+            <p className="text-gray-300">{currentRepo?.description}</p>
+            <div className="mt-2 flex items-center space-x-2">
+              {currentRepo?.topics?.map((topic, index) => (
+                <Badge className="bg-gray-200/20 text-gray-100" key={index}>
+                  {topic}
+                </Badge>
+              ))}
+            </div>
+          </div>
         </div>
       )}
       {addRepoDialog && (
