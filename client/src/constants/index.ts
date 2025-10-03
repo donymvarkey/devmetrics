@@ -1,4 +1,148 @@
 import { SiBitbucket, SiGithub, SiGitlab } from "react-icons/si";
+// src/constants/eventIcons.tsx
+import {
+  GitPullRequest,
+  GitBranch,
+  GitCommit,
+  GitFork,
+  Star,
+  MessageSquare,
+  Users,
+  PlayCircle,
+  BookOpen,
+  Lock,
+  Shield,
+  Bug,
+  Eye,
+  Tag,
+  Trash2,
+  RefreshCw,
+} from "lucide-react";
+
+import { GoRepo } from "react-icons/go";
+import { FaGithub } from "react-icons/fa";
+
+export const eventIcons: Record<
+  string,
+  { icon: React.ElementType; label: string; color: string }
+> = {
+  // 🔹 Commits & Branches
+  PushEvent: {
+    icon: GitCommit,
+    label: "Commit pushed",
+    color: "text-green-500",
+  },
+  CreateEvent: {
+    icon: GitBranch,
+    label: "Branch/Tag created",
+    color: "text-blue-500",
+  },
+  DeleteEvent: {
+    icon: Trash2,
+    label: "Branch/Tag deleted",
+    color: "text-red-500",
+  },
+
+  // 🔹 Pull Requests
+  PullRequestEvent: {
+    icon: GitPullRequest,
+    label: "Pull Request",
+    color: "text-purple-500",
+  },
+  PullRequestReviewEvent: {
+    icon: Eye,
+    label: "PR Review",
+    color: "text-indigo-500",
+  },
+  PullRequestReviewCommentEvent: {
+    icon: MessageSquare,
+    label: "PR Comment",
+    color: "text-indigo-400",
+  },
+
+  // 🔹 Issues
+  IssuesEvent: { icon: Bug, label: "Issue", color: "text-amber-500" },
+  IssueCommentEvent: {
+    icon: MessageSquare,
+    label: "Issue Comment",
+    color: "text-amber-400",
+  },
+
+  // 🔹 Discussions
+  DiscussionEvent: {
+    icon: BookOpen,
+    label: "Discussion",
+    color: "text-pink-500",
+  },
+  DiscussionCommentEvent: {
+    icon: MessageSquare,
+    label: "Discussion Comment",
+    color: "text-pink-400",
+  },
+
+  // 🔹 Repository
+  ForkEvent: {
+    icon: GitFork,
+    label: "Repository Forked",
+    color: "text-teal-500",
+  },
+  WatchEvent: { icon: Star, label: "Starred", color: "text-yellow-400" },
+  MemberEvent: { icon: Users, label: "Collaborator", color: "text-cyan-500" },
+  PublicEvent: { icon: Eye, label: "Made Public", color: "text-blue-400" },
+  RepositoryEvent: {
+    icon: GoRepo,
+    label: "Repository Event",
+    color: "text-gray-500",
+  },
+  ReleaseEvent: { icon: Tag, label: "Release", color: "text-emerald-500" },
+
+  // 🔹 CI/CD & Workflows
+  CheckRunEvent: {
+    icon: PlayCircle,
+    label: "Check Run",
+    color: "text-indigo-400",
+  },
+  CheckSuiteEvent: {
+    icon: PlayCircle,
+    label: "Check Suite",
+    color: "text-indigo-500",
+  },
+  WorkflowRunEvent: {
+    icon: RefreshCw,
+    label: "Workflow Run",
+    color: "text-blue-500",
+  },
+  WorkflowJobEvent: {
+    icon: RefreshCw,
+    label: "Workflow Job",
+    color: "text-blue-600",
+  },
+  WorkflowDispatchEvent: {
+    icon: PlayCircle,
+    label: "Workflow Dispatch",
+    color: "text-blue-400",
+  },
+
+  // 🔹 Security
+  SecurityAdvisoryEvent: {
+    icon: Shield,
+    label: "Security Advisory",
+    color: "text-red-600",
+  },
+  SecretScanningAlertEvent: {
+    icon: Lock,
+    label: "Secret Scan Alert",
+    color: "text-orange-500",
+  },
+  DependabotAlertEvent: {
+    icon: Shield,
+    label: "Dependabot Alert",
+    color: "text-green-600",
+  },
+
+  // 🔹 Default fallback
+  Default: { icon: FaGithub, label: "Activity", color: "text-gray-400" },
+};
 
 const platforms = [
   {

@@ -1,7 +1,13 @@
-import { getCommitActivity, listCollaborators, searchGithubRepos } from "@/api";
+import {
+  getCommitActivity,
+  getRecentActivity,
+  listCollaborators,
+  searchGithubRepos,
+} from "@/api";
 import CommitGraph from "@/components/CommitGraph";
 import ContributorsList from "@/components/ContributorsList";
 import CustomDialog from "@/components/CustomDialog";
+import RecentActivities from "@/components/RecentActivities";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,13 +31,13 @@ const Dashboard = () => {
   const [searchResults, setSearchResults] = useState<RepoSearchItem[]>([]);
   const [contributors, setContributors] = useState<ContributorProps[]>([]);
   const [commitData, setCommitData] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
   const debouncedQuery = useDebounce(repoName, 500);
   const { currentRepo } = useAppSelector((state) => state.repo);
 
   const searchRepositories = async (query: string) => {
     if (!query) return;
     const response = (await searchGithubRepos(query)) as RepoSearchResponse;
-    console.log("🚀 ~ searchRepositories ~ response:", response);
     setSearchResults(response.items as RepoSearchItem[]);
   };
 
@@ -74,6 +80,16 @@ const Dashboard = () => {
     }
   };
 
+  const getRecentRepoActivity = async () => {
+    if (currentRepo?.owner?.login && currentRepo?.name) {
+      const activity = await getRecentActivity(
+        currentRepo.owner.login,
+        currentRepo.name
+      );
+      setRecentActivity(activity as []);
+    }
+  };
+
   useEffect(() => {
     if (debouncedQuery) {
       searchRepositories(debouncedQuery);
@@ -83,6 +99,7 @@ const Dashboard = () => {
   useEffect(() => {
     getCommitData();
     getContributorsData();
+    getRecentRepoActivity();
   }, []);
 
   return (
@@ -160,6 +177,9 @@ const Dashboard = () => {
           </div>
           <div>
             <CommitGraph data={commitData} />
+          </div>
+          <div>
+            <RecentActivities recentEvents={recentActivity} />
           </div>
         </div>
       )}

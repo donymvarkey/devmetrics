@@ -172,4 +172,20 @@ interface ContributorProps {
   contributions: number;
 }
 
-export type { AuthState, User, LinkRepoProps, ContributorProps };
+interface RecentEventsProps {
+  id: string;
+  type: string;
+  actor: string;
+  avatar: string;
+  createdAt: string;
+  action: string;
+  issue: string;
+}
+
+export type {
+  AuthState,
+  User,
+  LinkRepoProps,
+  ContributorProps,
+  RecentEventsProps,
+};
