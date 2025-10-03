@@ -1,13 +1,13 @@
-import { DEMO_REPO } from "@/constants";
+import { DEMO_REPO_1 } from "@/constants";
 import type { RepoSearchItem } from "./../types/types";
 import type { RepoStateProps } from "@/types/types";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: RepoStateProps = {
-  linkedRepos: [DEMO_REPO],
+  linkedRepos: [DEMO_REPO_1],
   loading: false,
-  currentRepo: DEMO_REPO,
+  currentRepo: DEMO_REPO_1,
 };
 
 export const repoSlice = createSlice({
