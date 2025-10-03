@@ -1,4 +1,6 @@
-import { searchGithubRepos } from "@/api";
+import { getCommitActivity, listCollaborators, searchGithubRepos } from "@/api";
+import CommitGraph from "@/components/CommitGraph";
+import ContributorsList from "@/components/ContributorsList";
 import CustomDialog from "@/components/CustomDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +9,11 @@ import { Label } from "@/components/ui/label";
 import { useAppSelector } from "@/hooks";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
-import type { RepoSearchItem, RepoSearchResponse } from "@/types/types";
+import {
+  type ContributorProps,
+  type RepoSearchItem,
+  type RepoSearchResponse,
+} from "@/types/types";
 import { GitFork, PlusCircle, Star, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -17,12 +23,15 @@ const Dashboard = () => {
   const [repoName, setRepoName] = useState("");
   const [selectedRepo, setSelectedRepo] = useState<RepoSearchItem | null>(null);
   const [searchResults, setSearchResults] = useState<RepoSearchItem[]>([]);
+  const [contributors, setContributors] = useState<ContributorProps[]>([]);
+  const [commitData, setCommitData] = useState([]);
   const debouncedQuery = useDebounce(repoName, 500);
   const { currentRepo } = useAppSelector((state) => state.repo);
 
   const searchRepositories = async (query: string) => {
     if (!query) return;
     const response = (await searchGithubRepos(query)) as RepoSearchResponse;
+    console.log("🚀 ~ searchRepositories ~ response:", response);
     setSearchResults(response.items as RepoSearchItem[]);
   };
 
@@ -43,11 +52,38 @@ const Dashboard = () => {
     setSearchResults([]);
   };
 
+  const getContributorsData = async () => {
+    if (currentRepo?.owner?.login && currentRepo?.name) {
+      const collaborators = await listCollaborators(
+        currentRepo.owner.login,
+        currentRepo.name
+      );
+
+      setContributors(collaborators as ContributorProps[]);
+    }
+  };
+
+  const getCommitData = async () => {
+    if (currentRepo?.owner?.login && currentRepo?.name) {
+      const commits = await getCommitActivity(
+        currentRepo.owner.login,
+        currentRepo.name
+      );
+      setCommitData(commits as []);
+      // console.log("Commits in the last 30 days:", commits);
+    }
+  };
+
   useEffect(() => {
     if (debouncedQuery) {
       searchRepositories(debouncedQuery);
     }
   }, [debouncedQuery]);
+
+  useEffect(() => {
+    getCommitData();
+    getContributorsData();
+  }, []);
 
   return (
     <div className="w-full h-full">
@@ -107,7 +143,7 @@ const Dashboard = () => {
           </div>
           <div className="mt-3">
             <span className="text-xs text-gray-400/40 font-medium">About</span>
-            <p className="text-gray-300">{currentRepo?.description}</p>
+            <p className="text-gray-300 mt-4">{currentRepo?.description}</p>
             <div className="mt-2 flex items-center space-x-2">
               {currentRepo?.topics?.map((topic, index) => (
                 <Badge className="bg-gray-200/20 text-gray-100" key={index}>
@@ -115,6 +151,15 @@ const Dashboard = () => {
                 </Badge>
               ))}
             </div>
+          </div>
+          <div className="mt-5">
+            <ContributorsList
+              contributors={contributors}
+              title="Top Contributors"
+            />
+          </div>
+          <div>
+            <CommitGraph data={commitData} />
           </div>
         </div>
       )}
