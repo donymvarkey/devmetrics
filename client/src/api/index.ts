@@ -135,3 +135,23 @@ export const getCommitActivity = async (owner: string, repo: string) => {
     throw error;
   }
 };
+
+export const getRecentActivity = async (owner: string, repo: string) => {
+  const { data } = await octokit.request("GET /repos/{owner}/{repo}/events", {
+    owner,
+    repo,
+    per_page: 3, // latest 10 events
+  });
+
+  return data.map((event: any) => ({
+    id: event.id,
+    type: event.type,
+    actor: event.actor?.login,
+    avatar: event.actor?.avatar_url,
+    createdAt: event.created_at,
+    action: event.payload?.action,
+    commit: event.payload?.commits?.[0]?.message,
+    issue: event.payload?.issue?.title,
+    pr: event.payload?.pull_request?.title,
+  }));
+};
