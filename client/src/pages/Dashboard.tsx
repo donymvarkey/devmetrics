@@ -1,9 +1,11 @@
 import {
   getCommitActivity,
   getRecentActivity,
+  getRepoLanguages,
   listCollaborators,
   searchGithubRepos,
 } from "@/api";
+import Chart from "@/components/Chart";
 import CommitGraph from "@/components/CommitGraph";
 import ContributorsList from "@/components/ContributorsList";
 import CustomDialog from "@/components/CustomDialog";
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [contributors, setContributors] = useState<ContributorProps[]>([]);
   const [commitData, setCommitData] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [languagesData, setLanguagesData] = useState([]);
   const debouncedQuery = useDebounce(repoName, 500);
   const { currentRepo } = useAppSelector((state) => state.repo);
 
@@ -90,6 +93,16 @@ const Dashboard = () => {
     }
   };
 
+  const getLanguagesUsed = async () => {
+    if (currentRepo?.owner?.login && currentRepo?.name) {
+      const languages = await getRepoLanguages(
+        currentRepo?.owner?.login,
+        currentRepo?.name
+      );
+      setLanguagesData(languages);
+    }
+  };
+
   useEffect(() => {
     if (debouncedQuery) {
       searchRepositories(debouncedQuery);
@@ -100,6 +113,7 @@ const Dashboard = () => {
     getCommitData();
     getContributorsData();
     getRecentRepoActivity();
+    getLanguagesUsed();
   }, []);
 
   return (
@@ -178,8 +192,9 @@ const Dashboard = () => {
           <div>
             <CommitGraph data={commitData} />
           </div>
-          <div>
+          <div className="grid grid-cols-2 gap-4">
             <RecentActivities recentEvents={recentActivity} />
+            <Chart data={languagesData} />
           </div>
         </div>
       )}

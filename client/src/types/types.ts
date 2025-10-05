@@ -182,6 +182,12 @@ interface RecentEventsProps {
   issue: string;
 }
 
+export interface LanguageProps {
+  name: string;
+  bytes: number;
+  percentage: string;
+}
+
 export type {
   AuthState,
   User,
