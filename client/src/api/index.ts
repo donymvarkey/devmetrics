@@ -140,7 +140,7 @@ export const getRecentActivity = async (owner: string, repo: string) => {
   const { data } = await octokit.request("GET /repos/{owner}/{repo}/events", {
     owner,
     repo,
-    per_page: 3, // latest 10 events
+    per_page: 5, // latest 10 events
   });
 
   return data.map((event: any) => ({
@@ -154,4 +154,28 @@ export const getRecentActivity = async (owner: string, repo: string) => {
     issue: event.payload?.issue?.title,
     pr: event.payload?.pull_request?.title,
   }));
+};
+
+export const getRepoLanguages = async (owner: string, repo: string) => {
+  try {
+    const { data: languageData } = await octokit.rest.repos.listLanguages({
+      owner,
+      repo,
+    });
+
+    const totalBytes = Object.values(languageData).reduce(
+      (acc: any, bytes: any) => acc + bytes,
+      0
+    );
+
+    const languages = Object.entries(languageData).map(([name, bytes]) => ({
+      name,
+      bytes: Number(bytes),
+      percentage: ((Number(bytes) / totalBytes) * 100).toFixed(2),
+    }));
+
+    return languages;
+  } catch (error) {
+    return error;
+  }
 };
